@@ -1,0 +1,164 @@
+﻿@page
+@model CrmWeb.Pages.Clients.SettingModel
+@{
+}
+
+<script type="text/javascript">
+    function ShowPassword() {
+        var LastPass = document.querySelector("#LastPassword");
+        var NewPass = document.querySelector('#NewPassword');
+        var showPasswordCheckbox = document.querySelector("#checkPassword");
+
+        if (showPasswordCheckbox.checked) {
+            LastPass.type = "text";
+            NewPass.type = "text";
+        } else {
+            LastPass.type = "password";
+            NewPass.type = "password";
+        }
+    }
+
+    function SaveChanges() {
+        var UserName = document.querySelector('#UserName');
+        var LastPass = document.querySelector('#LastPassword');
+        var NewPass = document.querySelector('#NewPassword');
+
+        if (UserName.value === "" || LastPass.value === "" || NewPass.value === "") {
+            validateField(UserName, UserName.value !== "");
+            validateField(LastPass, LastPass.value !== "");
+            validateField(NewPass, NewPass.value !== "");
+            return;
+        } else if (UserName.value !== "" && LastPass.value !== "" && NewPass.value !== ""){
+            validateField(UserName, UserName.value !== "");
+            validateField(LastPass, LastPass.value !== "");
+            validateField(NewPass, NewPass.value !== "");
+
+            $.ajax({
+                url: '/api/ChangePass/SaveChanges',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                type: 'POST',
+                data: JSON.stringify({ UserName: UserName.value, LastPass: LastPass.value, NewPass: NewPass.value }),
+                success: function (result) {
+                    if (result == false) {
+                        document.getElementById('lbErrorSignInto').classList.remove("d-none");
+                        validateField(UserName, false);
+                        validateField(LastPass, false);
+                    } else {
+                        window.location.href = "/Clients/Setting";
+                    }
+                }
+            });
+        }
+    }
+
+    function validateField(field, isValid) {
+        if (isValid) {
+            field.classList.add("is-valid");
+            field.classList.remove("is-invalid");
+        } else {
+            field.classList.add("is-invalid");
+            field.classList.remove("is-valid");
+        }
+    }
+
+    function checkPriceValue(input) {
+        var formattedValue = parseFloat(input.value).toFixed(2);
+
+        if (!/^[0-9]*\.?[0-9]+$/.test(input.value) && input.value !== formattedValue) {
+            input.classList.add("is-invalid");
+            btnSave.disabled = true;
+        } else {
+            input.classList.remove("is-invalid");
+            btnSave.disabled = false;
+        }
+    }
+</script>
+
+@if (!string.IsNullOrEmpty(Model.successMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>@Model.successMessage</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(Model.errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>@Model.errorMessage</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<form method="post">
+    <div class="form-outline mb-4">
+        <label>Restaurant name</label>
+        <input type="text" asp-for="Name" value="@Model.Name" class="form-control" />
+    </div>
+
+    <div class="form-outline mb-4">
+        <label>Address</label>
+        <input type="text" asp-for="Address" class="form-control" placeholder ="Street"/>
+        <div class="d-flex">
+            <input type="text" asp-for="City" value="@Model.City" class="form-control" placeholder="City" />
+            <input type="text" asp-for="PLZ" value="@Model.PLZ" class="form-control" placeholder="Pstal code" />
+        </div>
+    </div>
+
+    <div class="form-outline mb-4">
+        <label>Phone</label>
+        <input type="number" asp-for="Phone" value="@Model.Phone" class="form-control" />
+    </div>
+
+    <div class="form-outline mb-4">
+        <label>UstIdNr</label>
+        <input type="text" asp-for="UstIdNr" value="@Model.UstIdNr" class="form-control" />
+    </div>
+
+    <div class="form-outline mb-4">
+        <label>Delivery price</label>
+        <input type="text" asp-for="DeliveryPrice" value="@Model.DeliveryPrice" oninput="checkPriceValue(this)" class="form-control" />
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header d-block">
+                    <h5 class="modal-title text-center" id="changePasswordModalLabel">Change Password</h5>
+                    <h6 class="alert alert-danger text-center m-1 d-none" role="alert" id="lbErrorSignInto">please check your username/password.</h6>
+                </div>
+                <div class="modal-body">
+                    <div class="form-outline mb-4">
+                        <label for="UserName">User Name</label>
+                        <input type="text" id="UserName" asp-for="UserName" value="@Model.UserName" class="form-control" />
+                    </div>
+                    <div class="form-outline mb-4">
+                        <label for="LastPassword">Last Password</label>
+                        <input type="password" id="LastPassword" asp-for="LastPassword" value="@Model.LastPassword" class="form-control" />
+                    </div>
+                    <div class="form-outline mb-4">
+                        <label for="NewPassword">New Password</label>
+                        <input type="password" id="NewPassword" asp-for="NewPassword" value="@Model.NewPassword" class="form-control" />
+                    </div>
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="checkPassword" onclick="ShowPassword()" />
+                        <label class="form-check-label" for="checkPassword">Show Password</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="SaveChanges()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Button to trigger the modal -->
+    <button type="button" class="btn btn-primary btn-block mb-4" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+        Change Password
+    </button>
+    <button type="submit" class="btn btn-success btn-block mb-4">Save</button>
+</form>

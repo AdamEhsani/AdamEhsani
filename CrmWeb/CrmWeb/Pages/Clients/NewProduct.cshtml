@@ -1,0 +1,191 @@
+﻿@page
+@model CrmWeb.Pages.Clients.NewProductModel
+@{
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var btnName = document.querySelector('#ProduktInputName').value;
+        var category = document.querySelector('#ProduktInputCategory').value;
+        var btnSave = document.querySelector('#btnSave');
+        if(btnName.trim() === "" || category.trim() === ""){
+            btnSave.disabled = true;
+        }else{
+            btnSave.disabled = false;
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelector('#ProduktInputName').addEventListener('input', updateButtonStatus);
+        document.querySelector('#ProduktInputCategory').addEventListener('change', updateButtonStatus);
+    });
+
+    function checkPriceValue(input){
+        var formattedValue = parseFloat(input.value).toFixed(2);
+
+        if (!/^[0-9]*\.?[0-9]+$/.test(input.value) && input.value !== formattedValue) {
+            input.classList.add("is-invalid");
+            btnSave.disabled = true;
+        } else {
+            input.classList.remove("is-invalid");
+            btnSave.disabled = false;
+        }
+    }
+
+    function updateButtonStatus() {
+        var btnName = document.querySelector('#ProduktInputName').value;
+        var category = document.querySelector('#ProduktInputCategory').value;
+        var btnSave = document.querySelector('#btnSave');
+
+        if (btnName.trim() === "" || category.trim() === "") {
+            btnSave.disabled = true;
+        } else {
+            btnSave.disabled = false;
+        }
+    }
+
+    function ShowPriceOption() {
+        var CategoryId = document.getElementById("ProduktInputCategory").value;
+        if (CategoryId.trim() !== "") {
+            $.ajax({
+                url: '/api/GetCategory/Category',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                type: 'POST',
+                data: JSON.stringify({ CategoryId: CategoryId }),
+                success: function (result) {
+                    if (result == "2") {
+                        $('#ProduktInputPreisM').removeClass('d-none');
+                        $('#ProduktInputPreisL').addClass('d-none');
+                        $('#ProduktInputPreisXL').addClass('d-none');
+                        $('#ProduktInputPreisXXL').addClass('d-none');
+                    }
+                    else if (result == "3") {
+                        $('#ProduktInputPreisM').removeClass('d-none');
+                        $('#ProduktInputPreisL').removeClass('d-none');
+                        $('#ProduktInputPreisXL').addClass('d-none');
+                        $('#ProduktInputPreisXXL').addClass('d-none');
+                    } else if (result == "4") {
+                        $('#ProduktInputPreisM').removeClass('d-none');
+                        $('#ProduktInputPreisL').removeClass('d-none');
+                        $('#ProduktInputPreisXL').removeClass('d-none');
+                        $('#ProduktInputPreisXXL').addClass('d-none');
+                    } else if (result == "5") {
+                        $('#ProduktInputPreisM').removeClass('d-none');
+                        $('#ProduktInputPreisL').removeClass('d-none');
+                        $('#ProduktInputPreisXL').removeClass('d-none');
+                        $('#ProduktInputPreisXXL').removeClass('d-none');
+                    }
+                    else if (result == "1") {
+                        $('#ProduktInputPreisM').addClass('d-none');
+                        $('#ProduktInputPreisL').addClass('d-none');
+                        $('#ProduktInputPreisXL').addClass('d-none');
+                        $('#ProduktInputPreisXXL').addClass('d-none');
+                    }
+                }
+            });
+        }else{
+            $('#ProduktInputPreisM').addClass('d-none');
+            $('#ProduktInputPreisL').addClass('d-none');
+            $('#ProduktInputPreisXL').addClass('d-none');
+            $('#ProduktInputPreisXXL').addClass('d-none');
+        }
+    }
+
+    function save(){
+        var name = document.querySelector('#ProduktInputName').value;
+        $.ajax({
+            url: '/api/NewProductController/CreateNewProduct',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            type: 'POST',
+            data: JSON.stringify({ CategoryId: CategoryId }),
+            success: function (result) {}
+        });
+
+    }
+
+
+</script>
+
+@if (!string.IsNullOrEmpty(Model.errorMessage))
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>@Model.errorMessage</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(Model.successMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>@Model.successMessage</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+
+<h4>Create Product</h4>
+<form method="post">
+    <div class="d-flex col-12">
+        <div class="form-group col-8">
+            <label for="ProduktInputName">Produkt Name</label>
+            <input type="text" class="form-control" name="Name" value="@Model.Products.Name" id="ProduktInputName" placeholder="Name">
+        </div>
+        <div class="form-group col-4">
+            <label for="ProduktInputPreis">Category</label>
+            <select name="Category" class="form-control" id="ProduktInputCategory" onchange="ShowPriceOption()">
+                <option value="">Select a category</option>
+                @foreach (var item in Model.categories)
+                {
+                    <option value="@item.Id">@item.Category</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group" id="inputsPrices">
+
+        <div class="from-group" id="ProduktInputPreisS">
+            <label for="ProduktInputPreisS">Price / €</label>
+            <label>
+                Small
+            </label>
+            <input type="text" name="PriceS" id="PriceS" min="0" value="@Model.Products.PriceS" oninput="checkPriceValue(this)" class="form-control" placeholder="Format: 08.70 €">
+        </div>
+
+        <div class="from-group d-none" id="ProduktInputPreisM">
+            <label for="ProduktInputPreisM">Price / €</label>
+            <label>
+                Medium
+            </label>
+            <input type="text" name="PriceM" id="PriceM" min="0" value="@Model.Products.PriceM" oninput="checkPriceValue(this)" class="form-control" placeholder="Format:00.00 €">
+        </div>
+
+        <div class="from-group d-none" id="ProduktInputPreisL">
+            <label for="ProduktInputPreisL">Price / €</label>
+            <label>
+                Big
+            </label>
+            <input type="text" name="PriceL" id="PriceL" min="0" value="@Model.Products.PriceL" oninput="checkPriceValue(this)" class="form-control" placeholder="Format:00.00 €">
+        </div>
+
+        <div class="from-group d-none" id="ProduktInputPreisXL">
+            <label for="ProduktInputPreisXL">Price / €</label>
+            <label>
+                Family
+            </label>
+            <input type="text" name="PriceXL" id="PriceXL" min="0" value="@Model.Products.PriceXL" oninput="checkPriceValue(this)" class="form-control" placeholder="Format:00.00 €">
+        </div>
+
+        <div class="from-group d-none" id="ProduktInputPreisXXL">
+            <label for="ProduktInputPreisXXL">Price / €</label>
+            <label>
+                Party
+            </label>
+            <input type="text" name="PriceXXL" id="PriceXXL" min="0" value="@Model.Products.PriceXXL" oninput="checkPriceValue(this)" class="form-control" placeholder="Format:00.00 €">
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success btn-sm mt-4" id="btnSave">Save</button>
+</form>

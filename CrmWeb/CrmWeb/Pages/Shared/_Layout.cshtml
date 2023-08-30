@@ -1,0 +1,93 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]  </title>
+
+    <!-- styles -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/CrmWeb.styles.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/StyleSheet.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!--‌scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</head>
+<body>
+    <header>
+        @if (!(ViewData["HideMenu"] is bool hideMenu && hideMenu))
+        {
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="container">
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewContext.RouteData.Values["Page"].ToString() == "/Clients/Home" ? "text-decoration-underline" : "text-dark")" asp-area="" asp-page="/Clients/Home">Home</a>
+                            </li>
+                            <li class="nav-item dropdown active">
+                                <a class="nav-link @(ViewContext.RouteData.Values["Page"].ToString() == "/Clients/NewCustomer" || ViewContext.RouteData.Values["Page"].ToString() == "/Clients/Customers" ? "text-decoration-underline dropdown-toggle" : "text-dark dropdown-toggle")" role="button" data-bs-toggle="dropdown" aria-expanded="false">Customers</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item small" asp-area="" asp-page="/Clients/NewCustomer">New Costumer</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item small" asp-area="" asp-page="/Clients/Customers">Customers list</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link @(ViewContext.RouteData.Values["Page"].ToString() == "/Clients/ProductCategories" || ViewContext.RouteData.Values["Page"].ToString() == "/Clients/NewProduct" || ViewContext.RouteData.Values["Page"].ToString() == "/Clients/Products" ? "text-decoration-underline dropdown-toggle" : "text-dark dropdown-toggle")" role="button" data-bs-toggle="dropdown" aria-expanded="false">Products</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item small" asp-area="" asp-page="/Clients/ProductCategories">Product Categories</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item small" asp-area="" asp-page="/Clients/NewProduct">New Product</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item small" asp-area="" asp-page="/Clients/Products">Products list</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link @(ViewContext.RouteData.Values["Page"].ToString() == "/Clients/NewStaff" || ViewContext.RouteData.Values["Page"].ToString() == "/Clients/Staffs" ? "text-decoration-underline dropdown-toggle" : "text-dark dropdown-toggle")" role="button" data-bs-toggle="dropdown" aria-expanded="false">Staffs</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item small" asp-area="" asp-page="/Clients/NewStaff">New Staff</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item small" asp-area="" asp-page="/Clients/Staffs">Staffs list</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link @(ViewContext.RouteData.Values["Page"].ToString() == "/Clients/NewExtraItem" || ViewContext.RouteData.Values["Page"].ToString() == "/Clients/ExtraItems" ? "text-decoration-underline dropdown-toggle" : "text-dark dropdown-toggle")" role="button" data-bs-toggle="dropdown" aria-expanded="false">Extra Items</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item small" asp-area="" asp-page="/Clients/NewExtraItem">New ExtraItem</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item small" asp-area="" asp-page="/Clients/ExtraItems">ExtraItems list</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewContext.RouteData.Values["Page"].ToString() == "/Clients/SavedOrders" ? "text-decoration-underline" : "text-dark")" asp-area="" asp-page="/Clients/SavedOrders">Orders</a>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link @(ViewContext.RouteData.Values["Page"].ToString() == "/Clients/Setting" ? "text-decoration-underline dropdown-toggle" : "text-dark dropdown-toggle")" role="button" data-bs-toggle="dropdown" aria-expanded="false">Profile</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item small" asp-area="" asp-page="/Clients/Setting">Setting</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item small" asp-area="" asp-page="">Help</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item small" asp-area="" asp-page="/index">Log out</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        }
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
