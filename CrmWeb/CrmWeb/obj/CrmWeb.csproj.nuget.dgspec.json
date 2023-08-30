@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\source\\repos\\CrmWeb\\CrmWeb\\CrmWeb.csproj": {}
+    "C:\\Users\\User\\source\\repos\\GitHub\\AdamEhsani\\CrmWeb\\CrmWeb\\CrmWeb.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\source\\repos\\CrmWeb\\CrmWeb\\CrmWeb.csproj": {
+    "C:\\Users\\User\\source\\repos\\GitHub\\AdamEhsani\\CrmWeb\\CrmWeb\\CrmWeb.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\source\\repos\\CrmWeb\\CrmWeb\\CrmWeb.csproj",
+        "projectUniqueName": "C:\\Users\\User\\source\\repos\\GitHub\\AdamEhsani\\CrmWeb\\CrmWeb\\CrmWeb.csproj",
         "projectName": "CrmWeb",
-        "projectPath": "C:\\Users\\User\\source\\repos\\CrmWeb\\CrmWeb\\CrmWeb.csproj",
+        "projectPath": "C:\\Users\\User\\source\\repos\\GitHub\\AdamEhsani\\CrmWeb\\CrmWeb\\CrmWeb.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\source\\repos\\CrmWeb\\CrmWeb\\obj\\",
+        "outputPath": "C:\\Users\\User\\source\\repos\\GitHub\\AdamEhsani\\CrmWeb\\CrmWeb\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
