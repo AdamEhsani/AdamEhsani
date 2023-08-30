@@ -1,0 +1,48 @@
+﻿@page
+@model CrmWeb.Pages.Clients.NewStaffModel
+@{
+}
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelector('#btnName').addEventListener('input', updateButtonStatus);
+        document.querySelector('#btnDepartment').addEventListener('input', updateButtonStatus);
+    });
+
+    function updateButtonStatus() {
+        var btnName = document.querySelector('#btnName').value;
+        var btnDepartment = document.querySelector('#btnDepartment').value;
+        var btnSave = document.querySelector('#btnSave');
+
+        if (btnName.trim() === "" || btnDepartment.trim() === "") {
+            btnSave.disabled = true;
+        } else {
+            btnSave.disabled = false;
+        }
+    }
+</script>
+
+@if (!string.IsNullOrEmpty(Model.successMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>@Model.successMessage</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<h4>Create new staff</h4>
+<form method="post">
+    <div class="mt-2">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" value="@Model.Name" id="btnName" class="form-control" />
+    </div>
+    <div class="mt-2">
+        <label asp-for="Department"></label>
+        <input asp-for="Department" value="@Model.Department" id="btnDepartment" class="form-control" />
+    </div>
+    <div class="mt-2">
+        <label asp-for="Phone"></label>
+        <input asp-for="Phone" value="@Model.Phone" id="btnPhone" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-success btn-sm mt-4" disabled id="btnSave">Save</button>
+</form>

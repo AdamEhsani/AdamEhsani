@@ -1,0 +1,106 @@
+﻿@page
+@model CrmWeb.Pages.Clients.ProductsModel
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#searchInput').on('keyup', function () {
+                var allRows = $('table tbody tr');
+                var value = $(this).val().toLowerCase();
+
+                if (value === '') {
+                    allRows.show();
+                } else {
+                    var filteredRows = allRows.filter(function () {
+                        return $(this).text().toLowerCase().indexOf(value) > -1;
+                    });
+
+                    allRows.hide();
+                    filteredRows.show();
+                }
+            });
+        });
+
+        function FilterProducts() {
+            var selectedCategory = $("#FilterCategory").val();
+
+            $("#productTable tbody tr").each(function () {
+                var categoryColumn = $(this).find("td:nth-child(8)").text();
+
+                if (selectedCategory === "" || categoryColumn === selectedCategory) {
+                    $(this).removeClass("hidden-row").addClass("visible-row");
+                } else {
+                    $(this).removeClass("visible-row").addClass("hidden-row");
+                }
+            });
+        }
+
+    </script>
+}
+
+<form method="post">
+    <div class="row mt-2">
+        <div class="col-md-4">
+            <div class="input-group">
+                <input class="form-control border" type="search" placeholder="search" id="searchInput">
+                <button type="button" id="clearSearch" style="display:none;">Clear</button>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="input-group">
+                <select class="form-control Category-dropdown btn-sm" asp-for="Category" id="FilterCategory">
+                    <option value="">Select a Category</option>
+                    @foreach (var driver in Model.Categories)
+                    {
+                        <option class="btn-sm" value="@driver.Category">@driver.Category</option>
+                    }
+                </select>
+                <button type="submit" class="btn btn-default btn-outline-success">Filter</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<form>
+    <table class="table" id="productTable">
+        <caption>List of Products</caption>
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Price Small</th>
+                <th scope="col">Price Medium</th>
+                <th scope="col">Price Large</th>
+                <th scope="col">Price Family</th>
+                <th scope="col">Price Party</th>
+                <th scope="col">Category</th>
+                <th scope="col">Edit</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @{
+                int i = 1;
+            }
+            @foreach (var item in Model.Products)
+            {
+                <tr>
+                    <td>@(i++)</td>
+                    <td>@item.Name</td>
+                    <td>@item.PriceS</td>
+                    <td>@item.PriceM</td>
+                    <td>@item.PriceL</td>
+                    <td>@item.PriceXL</td>
+                    <td>@item.PriceXXL</td>
+                    <td>@item.Category</td>
+                    <td>
+                        <a class="btn btn-info btn-sm" href="/Clients/EditProducts?id=@item.Id">Edit</a>
+                        <a class="btn btn-danger btn-sm" href="/Clients/DeleteProducts?id=@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>
