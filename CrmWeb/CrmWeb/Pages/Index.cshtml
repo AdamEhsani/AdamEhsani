@@ -61,8 +61,7 @@
 
                                 <form method="post">
                                     <div class="d-flex align-items-center mb-3 pb-1">
-                                        <i class="fas fa-cubes fa-2x me-3" style="color: #ff6219;"></i>
-                                        <span class="h1 fw-bold mb-0">Logo</span>
+                                        <span class="h4 fw-bold mb-0">Welcomme to OrderDirect</span>
                                     </div>
 
                                     <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Sign into your account</h5>
@@ -71,14 +70,14 @@
                                         please check your username/password.
                                     </div>
                                     <div class="form-outline mb-4">
+                                        <label class="form-label" for="UserName">User Name:</label>
                                         <input type="text" asp-for="UserName" id="UserNameId" class="form-control form-control-lg" />
-                                        <label class="form-label" for="UserName">User Name</label>
                                     </div>
 
                                     <div class="col">
                                         <div class="form-outline mb-4">
+                                            <label class="form-label" for="Password">Password:</label>
                                             <input type="password" asp-for="Password" id="PasswordId" class="form-control form-control-lg" />
-                                            <label class="form-label" for="Password">Password</label>
                                         </div>
                                         <div class="form-check d-flex mb-4 mt-2">
                                             <input class="form-check-input me-2" type="checkbox" id="checkPassword" onclick="ShowPassword()" />
