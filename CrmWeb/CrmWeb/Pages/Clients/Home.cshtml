@@ -62,7 +62,8 @@
                             <div class="form-group">
                                 <label for="bestandKundeInputAdresse">Addresse</label>
                                 <div class="d-flex">
-                                    <input type="text" class="form-control col-6 w-75 m-1" id="AddressStr" oninput="getLocationInfo()" asp-for="Address" placeholder="Address">
+                                    <input type="search" class="form-control col-6 w-75 m-1" id="AddressStr" oninput="getLocationInfo()" asp-for="Address" placeholder="Address">
+                                    <div class="from-control" id="searchResults"></div>
                                     <input type="text" class="form-control col-6 w-25 m-1" id="HomeNr" placeholder="HomeNr">
                                 </div>
                             </div>

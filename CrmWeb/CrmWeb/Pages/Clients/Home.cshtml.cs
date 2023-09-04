@@ -170,7 +170,8 @@ namespace CrmWeb.Pages.Clients
             using (SqlConnection connection = new SqlConnection(Db.DB()))
             {
                 connection.Open();
-                String sql = "SELECT * FROM Product WHERE PartnerId = @partnerId;";
+                //String sql = "SELECT * FROM Product WHERE PartnerId = @partnerId;";
+                String sql = "SELECT * FROM Product WHERE PartnerId = @partnerId ORDER BY ProductsTypeId;";
 
                 using (SqlCommand Command = new SqlCommand(sql, connection))
                 {

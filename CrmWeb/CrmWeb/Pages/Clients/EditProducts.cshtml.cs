@@ -3,6 +3,7 @@ using CrmWeb.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Data.SqlClient;
+using System.Text;
 
 namespace CrmWeb.Pages.Clients
 {
@@ -43,7 +44,9 @@ namespace CrmWeb.Pages.Clients
 
         public void OnGet()
         {
-            String id = Request.Query["Id"];
+          var deCodeId = Convert.FromBase64String(Request.Query["id"].ToString());
+          string id = Encoding.UTF8.GetString(deCodeId);
+
             var partnerId = Request.Cookies["PartnerId"];
 
             try

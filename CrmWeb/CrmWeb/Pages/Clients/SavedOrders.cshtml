@@ -17,131 +17,80 @@
     }
 
 </style>
-@section scripts {
-    <script>
 
-        $(document).ready(function () {
+<script>
+
+    $(document).ready(function () {
+        updateSum();
+
+        $('#searchInput').on('keyup', function () {
+            var driver = $(".driver-dropdown").val();
+            var allRows = $('table tbody tr');
+            var value = $(this).val().toLowerCase();
+
+            if (value === '') {
+                allRows.show();
+            } else {
+                var filteredRows = allRows.filter(function () {
+                    return $(this).text().toLowerCase().indexOf(value) > -1;
+                });
+
+                allRows.hide();
+                filteredRows.show();
+            }
             updateSum();
+        });
+    });
 
-            $('#searchInput').on('keyup', function () {
-                var driver = $(".driver-dropdown").val();
-                var allRows = $('table tbody tr');
-                var value = $(this).val().toLowerCase();
+    function updateSum() {
+        var sum = 0;
+        var columnCount = $('table thead tr th').length;
+        var totalRow = $('<tr class="sum-row"></tr>');
+        var cells = document.querySelectorAll("table tbody tr td:nth-child(5)");
+        var table = document.querySelectorAll("table tbody tr");
 
-                if (value === '') {
-                    allRows.show();
-                } else {
-                    var filteredRows = allRows.filter(function () {
-                        return $(this).text().toLowerCase().indexOf(value) > -1;
-                    });
+        var trVisible = $('table tbody tr:visible');
 
-                    allRows.hide();
-                    filteredRows.show();
-                }
-                updateSum();
-            });
+        trVisible.each(function () {
+            var tdDate = $(this).find('td:nth-child(4)');
+            var tdFifthColumn = $(this).find('td:nth-child(5)');
+            if (tdDate.text() !== "") {
+                sum += parseFloat(tdFifthColumn.text());
+            }
         });
 
-        function updateSum() {
-            var sum = 0;
-            var columnCount = $('table thead tr th').length;
-            var totalRow = $('<tr class="sum-row"></tr>');
-            var cells = document.querySelectorAll("table tbody tr td:nth-child(5)");
-            var table = document.querySelectorAll("table tbody tr");
+        totalRow.append('<td class="text-left">' + "Sum :" + '</td>');
+        for (var i = 0; i < columnCount - 4; i++) {
+            totalRow.append('<td></td>');
+        }
+        totalRow.append('<td class="text-left">' + sum + " €" + '</td>');
 
-            var trVisible = $('table tbody tr:visible');
+        for (var i = 5; i < columnCount; i++) {
+            totalRow.append('<td></td>');
+        }
 
-            trVisible.each(function () {
-                var tdDate = $(this).find('td:nth-child(4)');
-                var tdFifthColumn = $(this).find('td:nth-child(5)');
-                if (tdDate.text() !== "") {
-                    sum += parseFloat(tdFifthColumn.text());
+        $('table tbody .sum-row').remove();
+        $('table tbody').append(totalRow);
+    }
+
+
+    function AddDriver(orderId) {
+        var driverId = $('#driverDropdown_' + orderId).val();
+
+        if (driverId != "" || driverId != null) {
+            $.ajax({
+                url: '/api/SetDriver/AddDriver',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                type: 'POST',
+                data: JSON.stringify({ OrderId: orderId, DriverId: driverId }),
+                success: function (result) {
                 }
             });
-
-            totalRow.append('<td class="text-left">' + "Sum :" + '</td>');
-            for (var i = 0; i < columnCount - 4; i++) {
-                totalRow.append('<td></td>');
-            }
-            totalRow.append('<td class="text-left">' + sum + " €" + '</td>');
-
-            for (var i = 5; i < columnCount; i++) {
-                totalRow.append('<td></td>');
-            }
-
-            $('table tbody .sum-row').remove();
-            $('table tbody').append(totalRow);
+            $('#SavedModal').modal('show');
         }
-
-
-        function AddDriver(orderId) {
-            var driverId = $('#driverDropdown_' + orderId).val();
-
-            if (driverId != "" || driverId != null) {
-                $.ajax({
-                    url: '/api/SetDriver/AddDriver',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    type: 'POST',
-                    data: JSON.stringify({ OrderId: orderId, DriverId: driverId }),
-                    success: function (result) {
-                    }
-                });
-                $('#SavedModal').modal('show');
-            }
-        }
-
-        //function salesReport() {
-        //    $('#salesModal').show();
-
-        //    var ctx = document.getElementById('salesChartCanvas').getContext('2d');
-        //    var dates = @Html.Raw(Json.Serialize(Model.Orders.Where(_ => _.OrderDate != null).Select(_ => _.OrderDate.ToString("d")).ToList()));
-        //    var sales = @Html.Raw(Json.Serialize(Model.Orders.Where(_ => _.TotalPrice != null).Select(_ => _.TotalPrice).ToList()));
-
-        //    console.log(dates)
-        //    console.log(sales)
-
-        //    var salesChart = new Chart(ctx, {
-        //        type: 'line',
-        //        data: {
-        //            labels: dates,
-        //            datasets: [{
-        //                label: 'Sales Report',
-        //                data: sales,
-        //                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        //                borderColor: 'rgba(75, 192, 192, 1)',
-        //                borderWidth: 1
-        //            }]
-        //        },
-        //        options: {
-        //            responsive: true,
-        //            maintainAspectRatio: false,
-        //            scales: {
-        //                y: {
-        //                    beginAtZero: true
-        //                }
-        //            }
-        //        }
-        //    });
-        //}
-
-        //$('#showSalesReport').on('click', function () {
-        //    salesReport();
-        //});
-    </script>
-
-
- }
-
-@*<div style="width: 80%; margin: auto;">
-    <button id="showSalesReport">Sales Report</button>
-</div>
-
-<div id="salesModal" style="display: none;">
-    <div style="width: 80%; margin: auto;">
-        <canvas id="salesChartCanvas"></canvas>
-    </div>
-</div>*@
+    }
+</script>
 
 
 <div class="modal fade" id="SavedModal" role="dialog">
@@ -208,12 +157,12 @@
                     <td>@item.Address</td>
                     <td class="orderDate">@item.OrderDate</td>
                     <td>@item.TotalPrice</td>
-                    <td class="d-flex">
+                    <td class="driverSelection">
                         @{
                             if (string.IsNullOrEmpty(item.Driver))
                             {
-                                <select class="form-control driver-dropdown w-50 btn-sm" id="driverDropdown_@item.Id">
-                                    <option value="">Select a Driver</option>
+                                <select class="form-control driver-dropdown btn-sm" id="driverDropdown_@item.Id">
+                                    <option class="small" value="">Select a driver</option>
                                     @foreach (var driver in Model.Drivers)
                                     {
                                         <option class="btn-sm" value="@driver.Id">@driver.Name</option>
@@ -222,7 +171,7 @@
                             }
                             else
                             {
-                                <select class="form-control driver-dropdown w-50 btn-sm" id="driverDropdown_@item.Id">
+                                <select class="form-control driver-dropdown btn-sm" id="driverDropdown_@item.Id">
                                     <option value="@item.Driver"> @item.Driver</option>
                                     @foreach (var driver in Model.Drivers)
                                     {
@@ -233,10 +182,10 @@
                                     }
                                 </select>
                             }
-                            <a class="btn btn-outline-success btn-sm" href="javascript:void(0)" onclick="AddDriver(@item.Id)">Save</a>
                         }
                     </td>
                     <td>
+                        <a class="btn btn-outline-success btn-sm" href="javascript:void(0)" onclick="AddDriver(@item.Id)">Save</a>
                         <a class="btn btn-info btn-sm" href="/Clients/EditOrders?id=@item.Id">Edit</a>
                         <a class="btn btn-danger btn-sm" href="/Clients/DeleteOrders?id=@item.Id">Delete</a>
                     </td>

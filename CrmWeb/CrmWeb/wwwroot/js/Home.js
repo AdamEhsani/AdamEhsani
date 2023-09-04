@@ -36,61 +36,66 @@ function SetPickUp() {
 }
 
 function getLocationInfo() {
-    var address = document.getElementById('AddressStr');
-    if (false) {
-        $("#divLoading").fadeIn(300);
-        $.ajax({
-            url: '/api/NominatimService/GetLocationInfo',
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            type: 'POST',
-            data: JSON.stringify({ Address: address.value }),
-            success: function (result) {
-                if (result && Array.isArray(result)) {
-                    var availableAddresses = result.map(function (item) {
-                        if (item.display_name.split(',')[0] != null && item.display_name.split(',')[1] != null) {
-                            return item.display_name.split(',')[0].trim() + " ," + item.display_name.split(',')[1].trim();
-                        }
-                        return item.display_name.split(',')[0].trim();
-                    });
+    var searchInput = document.getElementById("AddressStr").value;
 
-                    $('#AddressStr').autocomplete({
-                        source: availableAddresses
-                    });
-                }
-            },
-            error: function (xhr, status, error) {
-            },
-            complete: function () {
-                $("#divLoading").hide(0);
-            }
-        });
-    }
+    var baseUrl = "https://nominatim.openstreetmap.org/search";
+    var query = "?q=" + searchInput + "&format=json";
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", baseUrl + query, true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            displayResults(response);
+        }
+    };
+    xhr.send();
+}
+
+
+function displayResults(result) {
+    var availableAddresses = result.map(function (item) {
+        if (item.display_name.split(',')[0] != null && item.display_name.split(',')[1] != null) {
+            return item.display_name.split(',')[0].trim() + " ," + item.display_name.split(',')[1].trim();
+        }
+        return item.display_name.split(',')[0].trim();
+    });
+
+    $('#AddressStr').autocomplete({
+        source: availableAddresses
+    });
 }
 
 function SaveOrder() {
-    var TotalPrice = $("#SumePrice").val();
-    var name = $("#bestandKundeInputName").val();
-    var phone = $("#inputCustomerPhone").val();
-    var adressStr = $("#AddressStr").val();
-    var HomeNr = $("#HomeNr").val();
+    var TotalPrice = document.querySelector('#SumePrice').value;
+    var name = document.querySelector('#bestandKundeInputName');
+    var phone = document.querySelector('#inputCustomerPhone');
+    var adressStr = document.querySelector('#AddressStr').value;
+    var HomeNr = document.querySelector('#HomeNr').value;
     var address = "";
+
     if (adressStr.trim() != "") {
         address = adressStr + " " + HomeNr;
     }
 
-    if (name.length >= 1) {
+    if (name.value.trim() != "" && phone.value.trim() != "") {
+        name.classList.remove("is-valid");
+        phone.classList.remove("is-valid");
+
         $.ajax({
             url: '/api/SaveOrders/SaveOrder',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             type: 'POST',
-            data: JSON.stringify({ Name: name, Phone: phone, Address: address, TotalPrice: TotalPrice }),
+            data: JSON.stringify({ Name: name.value, Phone: phone.value, Address: address, TotalPrice: TotalPrice }),
             success: function (result) {
                 var OrderId = result;
                 saveBillDetails(OrderId);
             }
         });
+    } else {
+        name.classList.add("is-invalid");
+        phone.classList.add("is-invalid");
     }
 }
 
@@ -291,7 +296,7 @@ function AddProduct() {
     ProductPrice.classList.remove("is-invalid");
     selectElement.classList.remove("is-invalid");
 
-    if (selectedName != "" && ProductPrice.innerText != "") {
+    if (selectedName != "" && ProductPrice.value.trim() != "") {
         var Bill = document.getElementById('tableBill');
         Bill.classList.remove("d-none");
         var tbody = document.querySelector("tbody");

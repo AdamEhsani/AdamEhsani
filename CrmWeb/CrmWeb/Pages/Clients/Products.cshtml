@@ -1,4 +1,5 @@
 ﻿@page
+@using System.Text;
 @model CrmWeb.Pages.Clients.ProductsModel
 
 @section scripts {
@@ -96,7 +97,12 @@
                     <td>@item.PriceXXL</td>
                     <td>@item.Category</td>
                     <td>
-                        <a class="btn btn-info btn-sm" href="/Clients/EditProducts?id=@item.Id">Edit</a>
+                        <a class="btn btn-info btn-sm" href="/Clients/EditProducts?id=@{
+                          byte[] encoding = Encoding.UTF8.GetBytes(item.Id.ToString());
+                          string base64Id = Convert.ToBase64String(encoding);
+                              @base64Id
+                        }">Edit</a>
+
                         <a class="btn btn-danger btn-sm" href="/Clients/DeleteProducts?id=@item.Id">Delete</a>
                     </td>
                 </tr>

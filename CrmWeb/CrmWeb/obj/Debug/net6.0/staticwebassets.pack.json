@@ -9,6 +9,10 @@
       "PackagePath": "staticwebassets\\Icons\\User.ico"
     },
     {
+      "Id": "C:\\Users\\User\\source\\repos\\GitHub\\AdamEhsani\\CrmWeb\\CrmWeb\\wwwroot\\Pic\\LoginBackgraund.jpg",
+      "PackagePath": "staticwebassets\\Pic\\LoginBackgraund.jpg"
+    },
+    {
       "Id": "C:\\Users\\User\\source\\repos\\GitHub\\AdamEhsani\\CrmWeb\\CrmWeb\\wwwroot\\css\\PrintStyles.css",
       "PackagePath": "staticwebassets\\css\\PrintStyles.css"
     },

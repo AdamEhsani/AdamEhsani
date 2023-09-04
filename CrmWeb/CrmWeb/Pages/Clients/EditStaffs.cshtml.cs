@@ -2,6 +2,7 @@ using CrmWeb.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Data.SqlClient;
+using System.Text;
 
 namespace CrmWeb.Pages.Clients
 {
@@ -23,6 +24,9 @@ namespace CrmWeb.Pages.Clients
 
         public void OnGet()
         {
+            var deCodeId = Convert.FromBase64String(Request.Query["id"].ToString());
+            Id = int.Parse(Encoding.UTF8.GetString(deCodeId));
+
             using (SqlConnection connection = new SqlConnection(Db.DB()))
             {
                 connection.Open();
