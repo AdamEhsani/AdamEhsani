@@ -122,8 +122,6 @@ function BillPrint() {
     deliveryPrice.classList.remove('d-none');
     deliveryPrice.innerText = "Delivery price: " + StoreDeliveryPrice;
 
-
-    // افزودن کلاس PrintHide به المان‌های مورد نظر
     var printHideElements = document.querySelectorAll('.PrintHide');
     printHideElements.forEach(function (element) {
         element.classList.add('d-none');
@@ -153,10 +151,7 @@ function saveBillDetails(OrderId) {
 
         var ExtraItems = cells[1].firstElementChild.textContent;
 
-        //var priceText = cells[2].textContent;
-        //var priceArticle = parseFloat(priceText);
         var priceArticle = cells[2].textContent;
-
 
         $.ajax({
             url: '/api/SaveBillDetails/SaveDetails',
@@ -285,9 +280,7 @@ var totalSum = 0;
 function AddProduct() {
     var ProductPrice = document.getElementById('ProduktInputPrice');
     var SumePrice = document.getElementById('SumePrice');
-
     var DeliveryPrice = document.getElementById('StoreDeliveryPrice').value;
-
 
     var selectElement = document.getElementById("ProduktInputName");
     var selectedOption = selectElement.options[selectElement.selectedIndex];
@@ -330,9 +323,9 @@ function AddProduct() {
         row.appendChild(nameCell);
 
         var priceCell = document.createElement("td");
-        var priceValue = parseFloat(ProductPrice.innerText);
+        var priceValue = parseFloat(ProductPrice.textContent.replace("€", ""));
         var PricWithItems = priceValue + priceExtraItems;
-        priceCell.textContent = PricWithItems + "€";
+        priceCell.innerText = PricWithItems + " €";
         row.appendChild(priceCell);
 
         var deleteCell = document.createElement("td");
@@ -355,7 +348,7 @@ function AddProduct() {
 
             await updateSumePrice();
         });
-
+        
         totalSum += PricWithItems;
         SumePrice.value = totalSum + parseFloat(DeliveryPrice);
         updateRowNumbers();

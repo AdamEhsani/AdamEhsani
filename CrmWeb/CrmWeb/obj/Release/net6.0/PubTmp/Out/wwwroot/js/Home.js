@@ -36,61 +36,66 @@ function SetPickUp() {
 }
 
 function getLocationInfo() {
-    var address = document.getElementById('AddressStr');
-    if (false) {
-        $("#divLoading").fadeIn(300);
-        $.ajax({
-            url: '/api/NominatimService/GetLocationInfo',
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            type: 'POST',
-            data: JSON.stringify({ Address: address.value }),
-            success: function (result) {
-                if (result && Array.isArray(result)) {
-                    var availableAddresses = result.map(function (item) {
-                        if (item.display_name.split(',')[0] != null && item.display_name.split(',')[1] != null) {
-                            return item.display_name.split(',')[0].trim() + " ," + item.display_name.split(',')[1].trim();
-                        }
-                        return item.display_name.split(',')[0].trim();
-                    });
+    var searchInput = document.getElementById("AddressStr").value;
 
-                    $('#AddressStr').autocomplete({
-                        source: availableAddresses
-                    });
-                }
-            },
-            error: function (xhr, status, error) {
-            },
-            complete: function () {
-                $("#divLoading").hide(0);
-            }
-        });
-    }
+    var baseUrl = "https://nominatim.openstreetmap.org/search";
+    var query = "?q=" + searchInput + "&format=json";
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", baseUrl + query, true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            displayResults(response);
+        }
+    };
+    xhr.send();
+}
+
+
+function displayResults(result) {
+    var availableAddresses = result.map(function (item) {
+        if (item.display_name.split(',')[0] != null && item.display_name.split(',')[1] != null) {
+            return item.display_name.split(',')[0].trim() + " ," + item.display_name.split(',')[1].trim();
+        }
+        return item.display_name.split(',')[0].trim();
+    });
+
+    $('#AddressStr').autocomplete({
+        source: availableAddresses
+    });
 }
 
 function SaveOrder() {
-    var TotalPrice = $("#SumePrice").val();
-    var name = $("#bestandKundeInputName").val();
-    var phone = $("#inputCustomerPhone").val();
-    var adressStr = $("#AddressStr").val();
-    var HomeNr = $("#HomeNr").val();
+    var TotalPrice = document.querySelector('#SumePrice').value;
+    var name = document.querySelector('#bestandKundeInputName');
+    var phone = document.querySelector('#inputCustomerPhone');
+    var adressStr = document.querySelector('#AddressStr').value;
+    var HomeNr = document.querySelector('#HomeNr').value;
     var address = "";
+
     if (adressStr.trim() != "") {
         address = adressStr + " " + HomeNr;
     }
 
-    if (name.length >= 1) {
+    if (name.value.trim() != "" && phone.value.trim() != "") {
+        name.classList.remove("is-valid");
+        phone.classList.remove("is-valid");
+
         $.ajax({
             url: '/api/SaveOrders/SaveOrder',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             type: 'POST',
-            data: JSON.stringify({ Name: name, Phone: phone, Address: address, TotalPrice: TotalPrice }),
+            data: JSON.stringify({ Name: name.value, Phone: phone.value, Address: address, TotalPrice: TotalPrice }),
             success: function (result) {
                 var OrderId = result;
                 saveBillDetails(OrderId);
             }
         });
+    } else {
+        name.classList.add("is-invalid");
+        phone.classList.add("is-invalid");
     }
 }
 
@@ -117,8 +122,6 @@ function BillPrint() {
     deliveryPrice.classList.remove('d-none');
     deliveryPrice.innerText = "Delivery price: " + StoreDeliveryPrice;
 
-
-    // افزودن کلاس PrintHide به المان‌های مورد نظر
     var printHideElements = document.querySelectorAll('.PrintHide');
     printHideElements.forEach(function (element) {
         element.classList.add('d-none');
@@ -148,10 +151,7 @@ function saveBillDetails(OrderId) {
 
         var ExtraItems = cells[1].firstElementChild.textContent;
 
-        //var priceText = cells[2].textContent;
-        //var priceArticle = parseFloat(priceText);
         var priceArticle = cells[2].textContent;
-
 
         $.ajax({
             url: '/api/SaveBillDetails/SaveDetails',
@@ -280,9 +280,7 @@ var totalSum = 0;
 function AddProduct() {
     var ProductPrice = document.getElementById('ProduktInputPrice');
     var SumePrice = document.getElementById('SumePrice');
-
     var DeliveryPrice = document.getElementById('StoreDeliveryPrice').value;
-
 
     var selectElement = document.getElementById("ProduktInputName");
     var selectedOption = selectElement.options[selectElement.selectedIndex];
@@ -291,7 +289,7 @@ function AddProduct() {
     ProductPrice.classList.remove("is-invalid");
     selectElement.classList.remove("is-invalid");
 
-    if (selectedName != "" && ProductPrice.innerText != "") {
+    if (selectedName != "" && ProductPrice.value.trim() != "") {
         var Bill = document.getElementById('tableBill');
         Bill.classList.remove("d-none");
         var tbody = document.querySelector("tbody");
@@ -325,9 +323,9 @@ function AddProduct() {
         row.appendChild(nameCell);
 
         var priceCell = document.createElement("td");
-        var priceValue = parseFloat(ProductPrice.innerText);
+        var priceValue = parseFloat(ProductPrice.textContent.replace("€", ""));
         var PricWithItems = priceValue + priceExtraItems;
-        priceCell.textContent = PricWithItems + "€";
+        priceCell.innerText = PricWithItems + " €";
         row.appendChild(priceCell);
 
         var deleteCell = document.createElement("td");
@@ -350,7 +348,7 @@ function AddProduct() {
 
             await updateSumePrice();
         });
-
+        
         totalSum += PricWithItems;
         SumePrice.value = totalSum + parseFloat(DeliveryPrice);
         updateRowNumbers();

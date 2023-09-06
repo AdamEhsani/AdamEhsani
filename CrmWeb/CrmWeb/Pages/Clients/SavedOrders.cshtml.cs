@@ -160,7 +160,7 @@ namespace CrmWeb.Pages.Clients
                                     Id = reader.GetInt32(0),
                                     Name = reader.GetString(1),
                                     Address = reader.GetString(2),
-                                    OrderDate = DateTime.Parse(reader.GetDateTime(3).ToString("d")),
+                                    OrderDate = reader.GetDateTime(3),
                                     Driver = GetStringFromReader(reader, 4),
                                     TotalPrice = reader.GetString(5)
                                 };

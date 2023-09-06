@@ -18,15 +18,15 @@ namespace CrmWeb.Pages.Clients
         public string Item { get; set; }
 
         [BindProperty]
-        public string PriceS { get; set; }
+        public string PriceS { get; set; } = "0";
         [BindProperty]
-        public string PriceM { get; set; }
+        public string PriceM { get; set; } = "0";
         [BindProperty]
-        public string PriceL { get; set; }
+        public string PriceL { get; set; } = "0";
         [BindProperty]
-        public string PriceXL { get; set; }
+        public string PriceXL { get; set; } = "0";
         [BindProperty]
-        public string PriceXXL { get; set; }
+        public string PriceXXL { get; set; } = "0";
 
         public String successMessage = string.Empty;
 

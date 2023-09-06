@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "/pZ3LEZN6IrThiN37VSnkTZvuW2uJDHPdq5fgf+bUkI=",
+  "Hash": "JdWSCsdhqSJo9YX4Muu5UKUR0EqBKsLU/iB3rhpJDjw=",
   "Source": "CrmWeb",
   "BasePath": "_content/CrmWeb",
   "Mode": "Default",
@@ -1154,6 +1154,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Identity": "C:\\Users\\User\\source\\repos\\GitHub\\AdamEhsani\\CrmWeb\\CrmWeb\\wwwroot\\Pic\\LoginBackgraund.jpg",
+      "SourceId": "CrmWeb",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\User\\source\\repos\\GitHub\\AdamEhsani\\CrmWeb\\CrmWeb\\wwwroot\\",
+      "BasePath": "_content/CrmWeb",
+      "RelativePath": "Pic/LoginBackgraund.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Pic\\LoginBackgraund.jpg"
     }
   ]
 }

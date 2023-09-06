@@ -2,6 +2,7 @@ using CrmWeb.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Data.SqlClient;
+using System.Drawing;
 
 namespace CrmWeb.Pages.Clients
 {
@@ -47,6 +48,8 @@ namespace CrmWeb.Pages.Clients
                 errorMessage = "All fields are required";
             }
             OnGet();
+            Category = string.Empty;
+            Type = string.Empty;
         }
 
         public void OnGet()
