@@ -42,7 +42,7 @@ namespace CrmWeb.api
         public object GetProductSizes([FromBody] SelectedProduct productId)
         {
             selectedId = productId.ProductId;
-            string[] productSizes = new string[5];
+            string[] productSizes = new string[6];
 
             using (SqlConnection connection = new SqlConnection(Db.DB()))
             {
@@ -61,32 +61,38 @@ namespace CrmWeb.api
                             switch (category)
                             {
                                 case 1:
-                                    productSizes[0] = "Small";
+                                    productSizes[0] = reader.GetString(2);
+                                    productSizes[1] = "Small";
                                     break;
                                 case 2:
-                                    productSizes[0] = "Small";
-                                    productSizes[1] = "Medium";
+                                    productSizes[0] = reader.GetString(2);
+                                    productSizes[1] = "Small";
+                                    productSizes[2] = "Medium";
                                     break;
                                 case 3:
-                                    productSizes[0] = "Small";
-                                    productSizes[1] = "Medium";
-                                    productSizes[2] = "Large";
+                                    productSizes[0] = reader.GetString(2);
+                                    productSizes[1] = "Small";
+                                    productSizes[2] = "Medium";
+                                    productSizes[3] = "Large";
                                     break;
                                 case 4:
-                                    productSizes[0] = "Small";
-                                    productSizes[1] = "Medium";
-                                    productSizes[2] = "Large";
-                                    productSizes[3] = "Family";
+                                    productSizes[0] = reader.GetString(2);
+                                    productSizes[1] = "Small";
+                                    productSizes[2] = "Medium";
+                                    productSizes[3] = "Large";
+                                    productSizes[4] = "Family";
                                     break;
                                 case 5:
-                                    productSizes[0] = "Small";
-                                    productSizes[1] = "Medium";
-                                    productSizes[2] = "Large";
-                                    productSizes[3] = "Family";
-                                    productSizes[4] = "Party";
+                                    productSizes[0] = reader.GetString(2);
+                                    productSizes[1] = "Small";
+                                    productSizes[2] = "Medium";
+                                    productSizes[3] = "Large";
+                                    productSizes[4] = "Family";
+                                    productSizes[5] = "Party";
                                     break;
                                 default:
-                                    productSizes[0] = "Normal";
+                                    productSizes[0] = reader.GetString(2);
+                                    productSizes[1] = "Normal";
                                     break;
                             }
 
