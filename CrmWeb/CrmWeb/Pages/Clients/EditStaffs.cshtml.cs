@@ -26,16 +26,18 @@ namespace CrmWeb.Pages.Clients
         {
             var deCodeId = Convert.FromBase64String(Request.Query["id"].ToString());
             Id = int.Parse(Encoding.UTF8.GetString(deCodeId));
+            string partnerId = Request.Cookies["PartnerId"];
 
             using (SqlConnection connection = new SqlConnection(Db.DB()))
             {
                 connection.Open();
 
-                String sql = "SELECT * FROM Staff WHERE Id = @Id;";
+                String sql = "SELECT * FROM Staff WHERE Id = @Id AND PartnerId = @partnerId;";
 
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue("@Id", Id);
+                    command.Parameters.AddWithValue("@partnerId", partnerId);
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -52,12 +54,8 @@ namespace CrmWeb.Pages.Clients
 
         public IActionResult OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            // Update user in database
+            var deCodeId = Convert.FromBase64String(Request.Query["id"].ToString());
+            Id = int.Parse(Encoding.UTF8.GetString(deCodeId));
 
             using (SqlConnection connection = new SqlConnection(Db.DB()))
             {
@@ -76,7 +74,6 @@ namespace CrmWeb.Pages.Clients
                 }
             }
 
-            // Redirect to confirmation page
             return RedirectToPage("/Clients/Staffs");
 
         }

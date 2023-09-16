@@ -1,7 +1,6 @@
 ﻿var resultExtraItem = [];
 
 $(document).ready(function () {
-    $('#PickUp').on('click', SetPickUp);
     $("#divLoading").hide(0);
     $(window).resize(function () {
         if ($(window).width() < 768) {
@@ -23,18 +22,6 @@ $(document).ready(function () {
     $(window).trigger('resize');
 });
 
-function SetPickUp() {
-    const checkPickUp = document.querySelector('#PickUp');
-    const adressStr = document.querySelector('#AddressStr');
-    const adressCity = document.querySelector('#HomeNr');
-    if (checkPickUp.checked) {
-        adressStr.disabled = true;
-        adressCity.disabled = true;
-    } else {
-        adressStr.disabled = false;
-        adressCity.disabled = false;
-    }
-}
 
 function getLocationInfo() {
     var searchInput = document.getElementById("AddressStr").value;
@@ -51,6 +38,19 @@ function getLocationInfo() {
         }
     };
     xhr.send();
+}
+
+function displayResults(result) {
+    var availableAddresses = result.map(function (item) {
+        if (item.display_name.split(',')[0] != null && item.display_name.split(',')[1] != null) {
+            return item.display_name.split(',')[0].trim() + " ," + item.display_name.split(',')[1].trim();
+        }
+        return item.display_name.split(',')[0].trim();
+    });
+
+    $('#AddressStr').autocomplete({
+        source: availableAddresses
+    });
 }
 
 function saveBillDetails(OrderId) {
@@ -88,12 +88,10 @@ function EditBillPrint() {
     var name = document.querySelector("#bestandKundeInputName").value;
     var phone = document.querySelector("#inputCustomerPhone").value;
     var adressStr = document.querySelector("#AddressStr").value;
-    var HomeNr = document.querySelector("#HomeNr").value;
-    var address = adressStr + " ," + HomeNr;
 
     document.querySelector('#CustomerNameInfo').innerText = "Name: " + name;
     document.querySelector('#CustomerPhoneInfo').innerText = "Phone: " + phone;
-    document.querySelector('#CustomerAddressInfo').innerText = "Address: " + address;
+    document.querySelector('#CustomerAddressInfo').innerText = "Address: " + adressStr;
 
     var Sum = document.querySelector('#PrintSumePrice');
     var SumeTable = document.querySelector('#SumePrice').value;
@@ -106,7 +104,6 @@ function EditBillPrint() {
     deliveryPrice.innerText = "Delivery price: " + StoreDeliveryPrice;
 
 
-    // افزودن کلاس PrintHide به المان‌های مورد نظر
     var printHideElements = document.querySelectorAll('.PrintHide');
     printHideElements.forEach(function (element) {
         element.classList.add('d-none');
@@ -141,15 +138,54 @@ function updateSize() {
                 $("#divLoading").fadeOut(300);
                 var productSizes = result;
                 var ProductSize = document.getElementById('ProduktInputSize');
+                var ProductPrice = document.getElementById('ProduktInputPrice');
+                ProductPrice.value = productSizes[0]; 
 
                 var options = "";
-                options += "<option value='" + "firstIndex" + "'>" + " " + "</option>";
-                for (var i = 0; i < productSizes.length; i++) {
+                for (var i = 1; i < productSizes.length; i++) {
                     if (productSizes[i] != null) {
                         options += "<option value='" + productSizes[i] + "'>" + productSizes[i] + "</option>";
                     }
                 }
                 ProductSize.innerHTML = options;
+            }
+        });
+    }
+    SetExtraItemsDefault();
+    $("#divLoading").hide(0);
+}
+
+
+function SetExtraItemsDefault() {
+    var selectedProductSize = "Small";
+    var AddExtraItems = document.getElementById('AddExtraItems');
+    var showCard = document.querySelector('#ShowItemsCard');
+    showCard.classList.remove('d-none');
+
+    AddExtraItems.innerHTML = "";
+    $("#divLoading").fadeIn(300);
+    if (selectedProductSize != "") {
+        $.ajax({
+            url: '/api/Price/GetExtraItems',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            type: 'POST',
+            data: JSON.stringify({ Size: selectedProductSize }),
+            success: function (result) {
+                $("#divLoading").fadeOut(300);
+
+                for (var i = 0; i < result.length; i++) {
+                    var listItem = document.createElement("li");
+                    listItem.textContent = result[i]["name"] + " " + result[i]["price"] + "€";
+                    listItem.classList.add("col-3");
+
+                    var checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.classList.add("ms-2");
+
+                    listItem.appendChild(checkbox);
+                    AddExtraItems.appendChild(listItem);
+                }
             }
         });
     }
@@ -180,10 +216,7 @@ function updatePrice() {
                 $("#divLoading").fadeOut(300);
                 var ProductPrice = document.getElementById('ProduktInputPrice');
 
-                var options = "";
-                options += "<option value='" + result + "'>" + result + "</option>";
-
-                ProductPrice.innerHTML = options;
+                ProductPrice.value = result;
             }
         });
         updateItems();
@@ -272,10 +305,10 @@ function AddProduct() {
         row.appendChild(nameCell);
 
         var priceCell = document.createElement("td");
-        priceCell.classList.add("ItemPrice");
-        var priceValue = parseFloat(ProductPrice.textContent.replace("€", ""));
+        priceCell.classList.add("ItmPrice");
+        var priceValue = parseFloat(ProductPrice.value);
         var PricWithItems = priceValue + priceExtraItems;
-        priceCell.innerText = PricWithItems + " €";
+        priceCell.innerText = PricWithItems.toFixed(1) + " €";
         row.appendChild(priceCell);
 
         var deleteCell = document.createElement("td");
@@ -294,14 +327,10 @@ function AddProduct() {
         var tableRows = tbody.querySelectorAll("tr");
         var newTotalSum = 0;
         tableRows.forEach(function (tableRow) {
-            var priceCell = tableRow.querySelector(".ItemPrice");
-            if (priceCell) {
-                var itemPrice = parseFloat(priceCell.textContent.replace("€", ""));
-                newTotalSum += itemPrice;
-            }
+            var price = tableRow.querySelector("td:nth-child(3)");
+            var itemPrice = parseFloat(price.textContent.replace("€", ""));
+            newTotalSum += itemPrice;
         });
-
-
         totalSum = newTotalSum;
 
         deleteButton.addEventListener("click", async function () {
@@ -310,15 +339,12 @@ function AddProduct() {
             sum -= 1;
             totalSum -= PricWithItems;
 
-            // محاسبه کل مجموع مبالغ در جدول
             var tableRows = tbody.querySelectorAll("tr");
             var newTotalSum = 0;
             tableRows.forEach(function (tableRow) {
-                var priceCell = tableRow.querySelector(".ItemPrice");
-                if (priceCell) {
-                    var itemPrice = parseFloat(priceCell.textContent.replace("€", ""));
-                    newTotalSum += itemPrice;
-                }
+                var price = tableRow.querySelector("td:nth-child(3)");
+                var itemPrice = parseFloat(price.textContent.replace("€", ""));
+                newTotalSum += itemPrice;
             });
 
             totalSum = newTotalSum;
@@ -346,12 +372,12 @@ function PriceExtraItems() {
     }
 
     var checkboxes = document.querySelectorAll("#AddExtraItems input[type='checkbox']");
-    var extrasList = document.querySelectorAll("#AddExtraItems li");  // لیست لیبل‌ها و چک باکس‌ها
+    var extrasList = document.querySelectorAll("#AddExtraItems li"); 
     var checkboxSum = 0;
 
     for (var i = 0; i < checkboxes.length; i++) {
         var checkbox = checkboxes[i];
-        var listItem = extrasList[i];  // لیست لیبل‌ها و چک باکس‌ها
+        var listItem = extrasList[i]; 
 
         var price = parseFloat(listItem.textContent.match(/\d+\.?\d*/));
         var itemName = listItem.textContent.replace(/\d+\.?\d*/, "").trim();

@@ -13,7 +13,7 @@ namespace CrmWeb.Pages.Clients
         public String successMessage = string.Empty;
 
         [BindProperty(SupportsGet = true)]
-        public int CustomerId { get; set; }
+        public string CustomerId { get; set; }
 
         [BindProperty]
         public string Name { get; set; }
@@ -24,33 +24,31 @@ namespace CrmWeb.Pages.Clients
         [BindProperty]
         public string Address { get; set; }
 
-        [BindProperty]
-        public string Plz { get; set; }
-
         public void OnGet()
         {
             var deCodeId = Convert.FromBase64String(Request.Query["id"].ToString());
-            string id = Encoding.UTF8.GetString(deCodeId);
+            CustomerId = Encoding.UTF8.GetString(deCodeId);
+            var partnerId = Request.Cookies["PartnerId"];
+
             try
             {
-
                 using (SqlConnection connection = new SqlConnection(Db.DB()))
                 {
                     connection.Open();
-                    String sql = "SELECT * FROM Customer WHERE id=@Id";
+                    String sql = "SELECT * FROM Customer WHERE Id=@Id AND PartnerId = @partnerId";
 
                     using (SqlCommand Command = new SqlCommand(sql, connection))
                     {
-                        Command.Parameters.AddWithValue("@Id", id);
+                        Command.Parameters.AddWithValue("@Id", CustomerId);
+                        Command.Parameters.AddWithValue("@partnerId", partnerId);
+
                         using (SqlDataReader Reader = Command.ExecuteReader())
                         {
                             if (Reader.Read())
                             {
-                                CustomerId = Reader.GetInt32(0);
                                 Name = Reader.GetString(1);
                                 Phone = Reader.GetString(2);
                                 Address = Reader.GetString(3);
-                                Plz = Reader.GetString(4).Trim();
                             }
                         }
                     }
@@ -75,15 +73,13 @@ namespace CrmWeb.Pages.Clients
                 return Page();
             }
 
-            // Update user in database
-
             using (SqlConnection connection = new SqlConnection(Db.DB()))
             {
                 connection.Open();
 
                 String sql = "UPDATE Customer " +
-                             "SET Name = @CustomerInputName, Address = @CustomerInputAddress, Phone = @CustomerInputPhone, PLZ = @CustomerInputPlz " +
-                             "WHERE id = @Id";
+                             "SET Name = @CustomerInputName, Address = @CustomerInputAddress, Phone = @CustomerInputPhone " +
+                             "WHERE Id = @Id";
 
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
@@ -91,13 +87,9 @@ namespace CrmWeb.Pages.Clients
                     command.Parameters.AddWithValue("@CustomerInputName", Name.Trim());
                     command.Parameters.AddWithValue("@CustomerInputPhone", Phone.Trim());
                     command.Parameters.AddWithValue("@CustomerInputAddress", Address.Trim());
-                    command.Parameters.AddWithValue("@CustomerInputPlz", Plz.Trim());
-
                     command.ExecuteNonQuery();
                 }
             }
-
-            // Redirect to confirmation page
             return RedirectToPage("/Clients/Customers");
         }
     }

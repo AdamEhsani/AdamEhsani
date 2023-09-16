@@ -50,7 +50,6 @@
                 <th scope="col">Name</th>
                 <th scope="col">Phone</th>
                 <th scope="col">Address</th>
-                <th scope="col">PLZ</th>
                 <th scope="col">Edit</th>
             </tr>
         </thead>
@@ -65,7 +64,6 @@
                     <td>@item.Name</td>
                     <td>@item.Phone</td>
                     <td>@item.Address</td>
-                    <td>@item.PLZ</td>
                     <td>
                         <a class="btn btn-info btn-sm" href="/Clients/EditCustomers?id=@{
                           byte[] encoding = Encoding.UTF8.GetBytes(item.Id.ToString());

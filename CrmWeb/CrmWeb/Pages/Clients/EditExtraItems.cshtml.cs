@@ -63,6 +63,9 @@ namespace CrmWeb.Pages.Clients
 
         public IActionResult OnPostAsync()
         {
+            var deCodeId = Convert.FromBase64String(Request.Query["id"].ToString());
+            Id = int.Parse(Encoding.UTF8.GetString(deCodeId));
+
             using (SqlConnection connection = new SqlConnection(Db.DB()))
             {
                 connection.Open();

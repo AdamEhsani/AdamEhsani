@@ -1,6 +1,5 @@
 ﻿var resultExtraItem = [];
 $(document).ready(function () {
-    $('#PickUp').on('click', SetPickUp);
     $("#divLoading").hide(0);
     $(window).resize(function () {
         if ($(window).width() < 768) {
@@ -22,18 +21,6 @@ $(document).ready(function () {
     $(window).trigger('resize');
 });
 
-function SetPickUp() {
-    const checkPickUp = document.querySelector('#PickUp');
-    const adressStr = document.querySelector('#AddressStr');
-    const adressCity = document.querySelector('#HomeNr');
-    if (checkPickUp.checked) {
-        adressStr.disabled = true;
-        adressCity.disabled = true;
-    } else {
-        adressStr.disabled = false;
-        adressCity.disabled = false;
-    }
-}
 
 function getLocationInfo() {
     var searchInput = document.getElementById("AddressStr").value;
@@ -69,14 +56,8 @@ function displayResults(result) {
 function SaveOrder() {
     var TotalPrice = document.querySelector('#SumePrice').value;
     var name = document.querySelector('#bestandKundeInputName');
-    var phone = document.querySelector('#inputCustomerPhone');
-    var adressStr = document.querySelector('#AddressStr').value;
-    var HomeNr = document.querySelector('#HomeNr').value;
-    var address = "";
-
-    if (adressStr.trim() != "") {
-        address = adressStr + " " + HomeNr;
-    }
+    var phone = document.querySelector('#SearchPhone');
+    var address = document.querySelector('#AddressStr').value;
 
     if (name.value.trim() != "" && phone.value.trim() != "") {
         name.classList.remove("is-valid");
@@ -103,10 +84,8 @@ function BillPrint() {
     document.querySelector('#StoreInfo').classList.remove('d-none');
     document.querySelector('#CustomerInfo').classList.remove('d-none');
     var name = document.querySelector("#bestandKundeInputName").value;
-    var phone = document.querySelector("#inputCustomerPhone").value;
-    var adressStr = document.querySelector("#AddressStr").value;
-    var HomeNr = document.querySelector("#HomeNr").value;
-    var address = adressStr + " ," + HomeNr;
+    var phone = document.querySelector("#SearchPhone").value;
+    var address = document.querySelector("#AddressStr").value;
 
     document.querySelector('#CustomerNameInfo').innerText = "Name: " + name;
     document.querySelector('#CustomerPhoneInfo').innerText = "Phone: " + phone;
@@ -191,10 +170,10 @@ function updateSize() {
                 $("#divLoading").fadeOut(300);
                 var productSizes = result;
                 var ProductSize = document.getElementById('ProduktInputSize');
-
+                var ProductPrice = document.getElementById('ProduktInputPrice');
+                ProductPrice.value = productSizes[0];
                 var options = "";
-                options += "<option value='" + "firstIndex" + "'>" + " " + "</option>";
-                for (var i = 0; i < productSizes.length; i++) {
+                for (var i = 1; i < productSizes.length; i++) {
                     if (productSizes[i] != null) {
                         options += "<option value='" + productSizes[i] + "'>" + productSizes[i] + "</option>";
                     }
@@ -203,17 +182,14 @@ function updateSize() {
             }
         });
     }
+    SetExtraItemsDefault();
     $("#divLoading").hide(0);
 }
 
 function updatePrice() {
     var selectElement = document.getElementById("ProduktInputSize");
-    var selectedIndex = selectElement.selectedIndex;
     var showCard = document.querySelector('#ShowItemsCard');
-    if (selectedIndex == 0) {
-        showCard.classList.add('d-none');
-        return;
-    }
+    showCard.classList.remove('d-none');
 
     var selectedProductId = document.getElementById('ProduktInputName').value;
     var selectedProductSize = document.getElementById('ProduktInputSize').value;
@@ -230,13 +206,46 @@ function updatePrice() {
                 $("#divLoading").fadeOut(300);
                 var ProductPrice = document.getElementById('ProduktInputPrice');
 
-                var options = "";
-                options += "<option value='" + result + "'>" + result + "</option>";
-
-                ProductPrice.innerHTML = options;
+                ProductPrice.value = result;
             }
         });
         updateItems();
+    }
+    $("#divLoading").hide(0);
+}
+
+function SetExtraItemsDefault() {
+    var selectedProductSize = "Small";
+    var AddExtraItems = document.getElementById('AddExtraItems');
+    var showCard = document.querySelector('#ShowItemsCard');
+    showCard.classList.remove('d-none');
+
+    AddExtraItems.innerHTML = "";
+    $("#divLoading").fadeIn(300);
+    if (selectedProductSize != "") {
+        $.ajax({
+            url: '/api/Price/GetExtraItems',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            type: 'POST',
+            data: JSON.stringify({ Size: selectedProductSize }),
+            success: function (result) {
+                $("#divLoading").fadeOut(300);
+
+                for (var i = 0; i < result.length; i++) {
+                    var listItem = document.createElement("li");
+                    listItem.textContent = result[i]["name"] + " " + result[i]["price"] + "€";
+                    listItem.classList.add("col-3");
+
+                    var checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.classList.add("ms-2");
+
+                    listItem.appendChild(checkbox);
+                    AddExtraItems.appendChild(listItem);
+                }
+            }
+        });
     }
     $("#divLoading").hide(0);
 }
@@ -323,9 +332,9 @@ function AddProduct() {
         row.appendChild(nameCell);
 
         var priceCell = document.createElement("td");
-        var priceValue = parseFloat(ProductPrice.textContent.replace("€", ""));
+        var priceValue = parseFloat(ProductPrice.value);
         var PricWithItems = priceValue + priceExtraItems;
-        priceCell.innerText = PricWithItems + " €";
+        priceCell.innerText = PricWithItems.toFixed(1) + " €";
         row.appendChild(priceCell);
 
         var deleteCell = document.createElement("td");
@@ -348,7 +357,7 @@ function AddProduct() {
 
             await updateSumePrice();
         });
-        
+
         totalSum += PricWithItems;
         SumePrice.value = totalSum + parseFloat(DeliveryPrice);
         updateRowNumbers();
@@ -369,12 +378,12 @@ function PriceExtraItems() {
     }
 
     var checkboxes = document.querySelectorAll("#AddExtraItems input[type='checkbox']");
-    var extrasList = document.querySelectorAll("#AddExtraItems li");  // لیست لیبل‌ها و چک باکس‌ها
+    var extrasList = document.querySelectorAll("#AddExtraItems li");
     var checkboxSum = 0;
 
     for (var i = 0; i < checkboxes.length; i++) {
         var checkbox = checkboxes[i];
-        var listItem = extrasList[i];  // لیست لیبل‌ها و چک باکس‌ها
+        var listItem = extrasList[i];
 
         var price = parseFloat(listItem.textContent.match(/\d+\.?\d*/));
         var itemName = listItem.textContent.replace(/\d+\.?\d*/, "").trim();

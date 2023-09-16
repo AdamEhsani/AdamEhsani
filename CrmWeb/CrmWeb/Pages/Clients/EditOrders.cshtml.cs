@@ -79,7 +79,6 @@ namespace CrmWeb.Pages.Clients
                                 Name = Reader.GetString(1);
                                 Phone = selectedValue;
                                 Address = Reader.GetString(3).Trim();
-                                PLZ = Reader.GetString(4);
                             }
                         }
                     }
@@ -305,7 +304,6 @@ namespace CrmWeb.Pages.Clients
                         {
                             Name = Reader.GetString(1);
                             Phone = Reader.GetString(2);
-                            PLZ = Reader.GetString(4);
                         }
                     }
                 }

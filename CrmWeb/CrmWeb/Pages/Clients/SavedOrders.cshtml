@@ -63,7 +63,7 @@
         for (var i = 0; i < columnCount - 4; i++) {
             totalRow.append('<td></td>');
         }
-        totalRow.append('<td class="text-left">' + sum + " €" + '</td>');
+        totalRow.append('<td class="text-left">' + sum.toFixed(1) + " €" + '</td>');
 
         for (var i = 5; i < columnCount; i++) {
             totalRow.append('<td></td>');

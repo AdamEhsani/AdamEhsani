@@ -30,8 +30,6 @@ namespace CrmWeb.Pages.Clients
                             customer.Name = Reader.GetString(1);
                             customer.Phone = Reader.GetString(2);
                             customer.Address = Reader.GetString(3);
-                            customer.PLZ = Reader.GetString(4);
-
                             Customers.Add(customer);
                         }
                     }

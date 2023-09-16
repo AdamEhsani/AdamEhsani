@@ -334,7 +334,7 @@ function AddProduct() {
         var priceCell = document.createElement("td");
         var priceValue = parseFloat(ProductPrice.value);
         var PricWithItems = priceValue + priceExtraItems;
-        priceCell.innerText = PricWithItems + " €";
+        priceCell.innerText = PricWithItems.toFixed(1) + " €";
         row.appendChild(priceCell);
 
         var deleteCell = document.createElement("td");
@@ -378,12 +378,12 @@ function PriceExtraItems() {
     }
 
     var checkboxes = document.querySelectorAll("#AddExtraItems input[type='checkbox']");
-    var extrasList = document.querySelectorAll("#AddExtraItems li");  // لیست لیبل‌ها و چک باکس‌ها
+    var extrasList = document.querySelectorAll("#AddExtraItems li");
     var checkboxSum = 0;
 
     for (var i = 0; i < checkboxes.length; i++) {
         var checkbox = checkboxes[i];
-        var listItem = extrasList[i];  // لیست لیبل‌ها و چک باکس‌ها
+        var listItem = extrasList[i];
 
         var price = parseFloat(listItem.textContent.match(/\d+\.?\d*/));
         var itemName = listItem.textContent.replace(/\d+\.?\d*/, "").trim();
