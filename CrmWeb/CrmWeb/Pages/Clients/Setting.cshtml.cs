@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Data.SqlClient;
 using CrmWeb.Data;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace CrmWeb.Pages.Clients
 {
@@ -36,6 +38,7 @@ namespace CrmWeb.Pages.Clients
         
         [BindProperty]
         public string NewPassword { get; set; }
+
         public string PartnerId { get; set; }
 
         public String errorMessage = string.Empty;
@@ -46,9 +49,66 @@ namespace CrmWeb.Pages.Clients
             LoadSetting();
         }
 
-        public void OnPost()
+        [HttpPost]
+        public void OnPost(IFormFile file)
         {
-            SaveSetting();
+            if(file != null && file.Length > 0)
+            {
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", file.FileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+            }
+
+            var partnerId = Request.Cookies["PartnerId"];
+            if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Address) || string.IsNullOrEmpty(Phone))
+            {
+                errorMessage = "All the fields are required";
+                return;
+            }
+            using (SqlConnection connection = new SqlConnection(Db.DB()))
+            {
+                connection.Open();
+
+                string sqlSetting = "UPDATE Setting " +
+                             "SET Name = @Name, Address = @Address, City = @City, PLZ = @PLZ, Phone = @Phone, UstIdNr = @UstIdNr, DeliveryPrice = @DeliveryPrice " +
+                             $"WHERE PartnerId = @partnerId";
+
+                using (SqlCommand command = new SqlCommand(sqlSetting, connection))
+                {
+                    command.Parameters.AddWithValue("@partnerId", partnerId);
+
+                    command.Parameters.AddWithValue("@Name", (object)Name ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@Address", (object)Address ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@City", (object)City ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@PLZ", (object)PLZ ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@Phone", (object)Phone ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@UstIdNr", (object)UstIdNr ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@DeliveryPrice", (object)DeliveryPrice ?? DBNull.Value);
+
+                    command.ExecuteNonQuery();
+                }
+
+                String sqlUsers = "UPDATE Users " +
+                            "SET Name = @Name, Address = @Address, City = @City, PLZ = @PLZ, Phone = @Phone " +
+                            $"WHERE Id = @partnerId";
+
+                using (SqlCommand command = new SqlCommand(sqlUsers, connection))
+                {
+                    command.Parameters.AddWithValue("@partnerId", partnerId);
+
+                    command.Parameters.AddWithValue("@Address", (object)Address ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@Name", (object)Name ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@City", (object)City ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@PLZ", (object)PLZ ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@Phone", (object)Phone ?? DBNull.Value);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+            successMessage = "Saved changed ";
         }
 
         private void LoadSetting()

@@ -58,11 +58,11 @@ namespace CrmWeb.Pages.Clients
             }
             successMessage = "New Extra item added Correctly";
             Item = String.Empty;
-            PriceS = String.Empty;
-            PriceM = String.Empty;
-            PriceL = String.Empty;
-            PriceXL = String.Empty;
-            PriceXXL = String.Empty;
+            PriceS = "0";
+            PriceM = "0";
+            PriceL = "0";
+            PriceXL = "0";
+            PriceXXL = "0";
         }
     }
 }
